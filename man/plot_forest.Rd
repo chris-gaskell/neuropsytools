@@ -13,6 +13,7 @@ plot_forest(
   ci.lb,
   ci.ub,
   axis.label.metric = metric,
+  color = "black",
   z.lines = TRUE,
   z.line.color = "black",
   descriptors = TRUE,
@@ -43,6 +44,8 @@ upper bound of the confidence interval.}
 
 \item{axis.label.metric}{The metric to be used for axis labels. Defaults to
 the value of \code{metric}. Can be "percentile", "t", "index", "scaled", or "z".}
+
+\item{color}{of the points and errors bars. Defaults to "black".}
 
 \item{z.lines}{(Optional) Logical value indicating whether to draw lines at
 z-scores from -4 to 4. Defaults to TRUE.}

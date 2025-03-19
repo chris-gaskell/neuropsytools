@@ -25,6 +25,7 @@ utils::globalVariables(c("count", "y", "change"))
 #'   on the plot for the average range. Defaults to TRUE.
 #' @param abbreviations (Optional) Logical value indicating whether to
 #'   abbreviate test names. Defaults to FALSE.
+#' @param color of the points and errors bars. Defaults to "black".
 #' @param z.lines (Optional) Logical value indicating whether to draw lines at
 #'   z-scores from -4 to 4. Defaults to TRUE.
 #' @param z.line.color (Optional) Color of the z-lines. Defaults to "black".
@@ -58,8 +59,11 @@ utils::globalVariables(c("count", "y", "change"))
 #' plot_forest(df, score = score, test = test, group = group, ci.lb = ci.lb,
 #' ci.ub = ci.ub, descriptors = FALSE, shading = FALSE)
 plot_forest <- function(data, score, metric = "z", test, group, ci.lb, ci.ub, axis.label.metric = metric,
+                        color = "black",
                         z.lines = TRUE, z.line.color = "black",
-                        descriptors = TRUE, descriptors.color = "black", shading = TRUE, shading.color = "#2fa4e7", abbreviations = FALSE) {
+                        descriptors = TRUE, descriptors.color = "black",
+                        shading = TRUE, shading.color = "#2fa4e7",
+                        abbreviations = FALSE) {
   # Check if group or test is missing
   if (missing(group) || missing(test)) {
     stop("Both the 'test' and 'group' arguments are required.")
@@ -122,7 +126,7 @@ plot_forest <- function(data, score, metric = "z", test, group, ci.lb, ci.ub, ax
     ggplot2::ggplot(ggplot2::aes(
       x = forcats::fct_rev(test), y = z
     )) +
-    ggplot2::geom_point(size = 2.5) +
+    ggplot2::geom_point(size = 2.5, color = color) +
     ggplot2::coord_flip(ylim = c(-4, 4)) +
     ggplot2::facet_grid(
       rows = dplyr::vars(group),
@@ -141,6 +145,11 @@ plot_forest <- function(data, score, metric = "z", test, group, ci.lb, ci.ub, ax
     ) +
     ggplot2::labs(y = y_label_text, x = "Neuropsychology Tests")
 
+  if (shading) {
+    p <- p +
+      ggplot2::geom_rect(ggplot2::aes(xmin = -Inf, xmax = Inf, ymin = -1, ymax = 1), fill = shading.color, alpha = 1)
+  }
+
   if (descriptors) {
     first_group <- data |>  dplyr::pull({{group}}) |>  dplyr::first()
     first_test <- data |>  dplyr::pull({{test}}) |>  dplyr::first()
@@ -155,16 +164,12 @@ plot_forest <- function(data, score, metric = "z", test, group, ci.lb, ci.ub, ax
                          ggplot2::aes(y = y, x = first_group_count + 0.35, label = label), color = descriptors.color)
   }
 
-  if (shading) {
-    p <- p +
-      ggplot2::geom_rect(ggplot2::aes(xmin = -Inf, xmax = Inf, ymin = -1, ymax = 1), fill = shading.color, alpha = .1)
-  }
 
 
   if (!missing(ci.lb) && !missing(ci.ub)) {
     p <- p +
       ggplot2::geom_errorbar(ggplot2::aes(ymin = {{ci.lb}}, ymax = {{ci.ub}}), width = .2,
-                             position = ggplot2::position_dodge(.9))
+                             position = ggplot2::position_dodge(.9), color = color)
   }
 
   if (z.lines) {
