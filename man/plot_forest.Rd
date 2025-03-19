@@ -13,8 +13,12 @@ plot_forest(
   ci.lb,
   ci.ub,
   axis.label.metric = metric,
+  z.lines = TRUE,
+  z.line.color = "black",
   descriptors = TRUE,
+  descriptors.color = "black",
   shading = TRUE,
+  shading.color = "#2fa4e7",
   abbreviations = FALSE
 )
 }
@@ -40,14 +44,23 @@ upper bound of the confidence interval.}
 \item{axis.label.metric}{The metric to be used for axis labels. Defaults to
 the value of \code{metric}. Can be "percentile", "t", "index", "scaled", or "z".}
 
+\item{z.lines}{(Optional) Logical value indicating whether to draw lines at
+z-scores from -4 to 4. Defaults to TRUE.}
+
+\item{z.line.color}{(Optional) Color of the z-lines. Defaults to "black".}
+
 \item{descriptors}{(Optional) Logical value indicating whether to include
-descriptive labels on the plot. Defaults to TRUE.}
+descriptive labels on the plot (e.g., "Below", "Average", "Above"). Defaults to TRUE.}
+
+\item{descriptors.color}{(Optional) Color of the descriptor labels. Defaults to "black".}
 
 \item{shading}{(Optional) Logical value indicating whether to include shading
-on the plot for the average range. Defaults to TRUE.}
+on the plot for the average range (e.g., z-scores between -1 and 1). Defaults to TRUE.}
 
-\item{abbreviations}{(Optional) Logical value indicating whether to
-abbreviate test names. Defaults to FALSE.}
+\item{shading.color}{(Optional) Color of the shaded area. Defaults to "#2fa4e7".}
+
+\item{abbreviations}{(Optional) Logical value indicating whether to abbreviate test names.
+Defaults to FALSE.}
 }
 \value{
 A ggplot object representing the forest plot.

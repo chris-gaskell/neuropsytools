@@ -25,6 +25,17 @@ utils::globalVariables(c("count", "y", "change"))
 #'   on the plot for the average range. Defaults to TRUE.
 #' @param abbreviations (Optional) Logical value indicating whether to
 #'   abbreviate test names. Defaults to FALSE.
+#' @param z.lines (Optional) Logical value indicating whether to draw lines at
+#'   z-scores from -4 to 4. Defaults to TRUE.
+#' @param z.line.color (Optional) Color of the z-lines. Defaults to "black".
+#' @param descriptors (Optional) Logical value indicating whether to include
+#'   descriptive labels on the plot (e.g., "Below", "Average", "Above"). Defaults to TRUE.
+#' @param descriptors.color (Optional) Color of the descriptor labels. Defaults to "black".
+#' @param shading (Optional) Logical value indicating whether to include shading
+#'   on the plot for the average range (e.g., z-scores between -1 and 1). Defaults to TRUE.
+#' @param shading.color (Optional) Color of the shaded area. Defaults to "#2fa4e7".
+#' @param abbreviations (Optional) Logical value indicating whether to abbreviate test names.
+#'   Defaults to FALSE.
 #'
 #' @return A ggplot object representing the forest plot.
 #' @export
@@ -47,7 +58,8 @@ utils::globalVariables(c("count", "y", "change"))
 #' plot_forest(df, score = score, test = test, group = group, ci.lb = ci.lb,
 #' ci.ub = ci.ub, descriptors = FALSE, shading = FALSE)
 plot_forest <- function(data, score, metric = "z", test, group, ci.lb, ci.ub, axis.label.metric = metric,
-                        descriptors = TRUE, shading = TRUE, abbreviations = FALSE) {
+                        z.lines = TRUE, z.line.color = "black",
+                        descriptors = TRUE, descriptors.color = "black", shading = TRUE, shading.color = "#2fa4e7", abbreviations = FALSE) {
   # Check if group or test is missing
   if (missing(group) || missing(test)) {
     stop("Both the 'test' and 'group' arguments are required.")
@@ -140,18 +152,24 @@ plot_forest <- function(data, score, metric = "z", test, group, ci.lb, ci.ub, ax
                                            y = descriptor_labels$z,
                                            label = descriptor_labels$label,
                                            group = first_group),
-                         ggplot2::aes(y = y, x = first_group_count + 0.35, label = label))
+                         ggplot2::aes(y = y, x = first_group_count + 0.35, label = label), color = descriptors.color)
   }
 
   if (shading) {
     p <- p +
-      ggplot2::geom_rect(ggplot2::aes(xmin = -Inf, xmax = Inf, ymin = -1, ymax = 1), fill = "#2fa4e7", alpha = .1)
+      ggplot2::geom_rect(ggplot2::aes(xmin = -Inf, xmax = Inf, ymin = -1, ymax = 1), fill = shading.color, alpha = .1)
   }
+
 
   if (!missing(ci.lb) && !missing(ci.ub)) {
     p <- p +
       ggplot2::geom_errorbar(ggplot2::aes(ymin = {{ci.lb}}, ymax = {{ci.ub}}), width = .2,
                              position = ggplot2::position_dodge(.9))
+  }
+
+  if (z.lines) {
+    p <- p +
+      ggplot2::geom_hline(yintercept = seq(-4, 4, by = 1), size = 0.5, color = z.line.color)
   }
 
   return(p)
