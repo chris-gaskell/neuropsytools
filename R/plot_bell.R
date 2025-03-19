@@ -2,18 +2,30 @@ utils::globalVariables(c("x", "z", "label"))
 
 #' Plot Bell Curve
 #'
-#' @param input A numeric value (or vector of numbers) representing the score of interest.
-#' @param metric A character string specifying the metric of the input score: "percentile", "t", "index", "scaled", or "z" (default).
-#' @param score.label.text A character string (or vector of character strings) for the label text of the input score(s).
-#' @param axis.label.metric A character string specifying the preferred metric label for x-axis labels: "percentile", "t", "index", "scaled", or "z" (default).
-#' @param descriptors A logical indicating whether to include AAN descriptor labels (default is TRUE).
+#' @param input A numeric value (or vector of numbers) representing the score(s) of interest. The function will adjust the score to the Z-score metric for plotting.
+#' @param metric A character string specifying the metric of the input score: "percentile", "t", "index", "scaled", or "z" (default is "z").
+#' @param score.label.text A character string (or vector of character strings) for the label text of the input score(s). Defaults to "test".
+#' @param axis.label.metric A character string specifying the preferred metric label for x-axis labels: "percentile", "t", "index", "scaled", or "z" (default is "z").
+#' @param descriptors A logical indicating whether to include descriptor labels ("Below", "Low", "Average", "High", "Above") on the plot (default is TRUE).
+#' @param color A character string specifying the colour for the plot line (default is "black").
+#' @param text.color A character string specifying the colour for the score labels (default is "black").
+#' @param area.over.fill A character string specifying the colour for the area above the score (default is "#2fa4e7").
+#' @param area.under.fill A character string specifying the colour for the area below the score (default is "#ced4da").
+#' @param alpha A numeric value between 0 and 1 indicating the transparency of the shaded areas (default is 0.3).
+#'
 #'
 #' @return A ggplot2 object.
 #' @export
 #'
 #' @examples
 #' plot_bell(input = 2, score.label.text = "Test Score", axis.label.metric = "z")
-plot_bell <- function(input, metric = "z", score.label.text = "test", axis.label.metric = metric, descriptors = TRUE) {
+plot_bell <- function(input, metric = "z", score.label.text = "test",
+                      axis.label.metric = metric, descriptors = TRUE,
+                      color = "black",
+                      text.color = "black",
+                      area.over.fill = "#2fa4e7",
+                      area.under.fill = "#ced4da",
+                      alpha = 0.3) {
   if (!is.numeric(input)) stop("Input must be numeric.")
   valid.labels <- c("percentile", "t", "index", "scaled", "z")
   if (!axis.label.metric %in% valid.labels) stop(glue::glue("{axis.label.metric} is invalid. Choose from: {paste(valid.labels, collapse = ', ')}"))
@@ -56,22 +68,23 @@ plot_bell <- function(input, metric = "z", score.label.text = "test", axis.label
 
   if (length(input) == 1) {
     p <- p +
-      ggplot2::stat_function(fun = curve.area, args = list(above = TRUE, input = input), geom = "area", fill = "#ced4da", alpha = 0.3) +
-      ggplot2::stat_function(fun = curve.area, args = list(above = FALSE, input = input), geom = "area", fill = "#2fa4e7", alpha = 0.3)
+      ggplot2::stat_function(fun = curve.area, args = list(above = TRUE, input = input), geom = "area", color = color, fill = area.under.fill, alpha = alpha) +
+      ggplot2::stat_function(fun = curve.area, args = list(above = FALSE, input = input), geom = "area", color = color, fill = area.over.fill, alpha = alpha)
   } else {
     p <- p +
-      ggplot2::stat_function(fun = curve.area, args = list(above = TRUE, input = input[1]), geom = "area", fill = "#2fa4e7", alpha = 0.3) +
-      ggplot2::stat_function(fun = curve.area, args = list(above = FALSE, input = input[1]), geom = "area", fill = "#2fa4e7", alpha = 0.3)
+      ggplot2::stat_function(fun = curve.area, args = list(above = TRUE, input = input[1]), geom = "area", color = color, fill = area.over.fill, alpha = alpha) +
+      ggplot2::stat_function(fun = curve.area, args = list(above = FALSE, input = input[1]), geom = "area", color = color, fill = area.over.fill, alpha = alpha)
   }
 
   p <- p +
-    ggplot2::geom_segment(data = segment.data, ggplot2::aes(x = input, y = 0, xend = input, yend = 0.4), color = "black", linewidth = 0.8) +
-    ggplot2::geom_label(data = segment.data, ggplot2::aes(x = input, y = 0.2, label = score.label.text), label.padding = grid::unit(0.45, "lines"), label.size = 0.45, color = "#00688b", size = 4.5, alpha = 1, angle = 90)
+    ggplot2::geom_segment(data = segment.data, ggplot2::aes(x = input, y = 0, xend = input, yend = 0.4), color = text.color, linewidth = 0.8, alpha = 1) +
+    ggplot2::geom_label(data = segment.data, ggplot2::aes(x = input, y = 0.2, label = score.label.text), label.padding = grid::unit(0.45, "lines"), label.size = 0.45, color = text.color, size = 4.5,
+                        alpha = 1, angle = 90)
 
   if (descriptors) {
     descriptor.labels <- data.frame(z = c(-2.5, -1.5, -0.5, 0.5, 1.5, 2.5), label = c("Below", "Low", "Average", "Average", "High", "Above"))
     p <- p +
-      ggplot2::geom_text(data = descriptor.labels, ggplot2::aes(x = z, y = 0.4, label = label), size = 4, color = "black", angle = 0, hjust = 0.5)
+      ggplot2::geom_text(data = descriptor.labels, ggplot2::aes(x = z, y = 0.4, label = label), size = 4, color = text.color, angle = 0, hjust = 0.5)
   }
 
   return(p)

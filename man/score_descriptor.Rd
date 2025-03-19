@@ -4,7 +4,7 @@
 \alias{score_descriptor}
 \title{#' Generate Descriptive Labels for Standardized Test Scores}
 \usage{
-score_descriptor(score, metric = "index", system = "aan")
+score_descriptor(score, metric = "index", system = "aan", keep_na = TRUE)
 }
 \arguments{
 \item{score}{Numeric value (or vector) containing the standardised scores to
@@ -16,6 +16,8 @@ be converted.}
 \item{system}{Character string specifying the descriptor system to use.
 Options include "aan", "wisc", "wais", "groth.marnat", "nepsy", "q.simple",
 and "heaton". Default is "aan".}
+
+\item{keep_na}{NA values are kept as NA without throwing a warning message.}
 }
 \value{
 A character vector containing the qualitative descriptors (e.g.,

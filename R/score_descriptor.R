@@ -24,6 +24,7 @@
 #'@param system Character string specifying the descriptor system to use.
 #'  Options include "aan", "wisc", "wais", "groth.marnat", "nepsy", "q.simple",
 #'  and "heaton". Default is "aan".
+#'@param keep_na NA values are kept as NA without throwing a warning message.
 #'
 #'@return A character vector containing the qualitative descriptors (e.g.,
 #'  "Low", "Average", "High") corresponding to the input test scores based on
@@ -53,7 +54,7 @@
 #'   - [convert_standard()]: For assessing a dissociation between two test scores for a single case.
 #'
 #'@export
-score_descriptor <- function(score, metric = "index", system = "aan") {
+score_descriptor <- function(score, metric = "index", system = "aan", keep_na = TRUE) {
   thresholds <- list(
     "aan"  =         c(69, 79, 89, 109, 119, 129),
     "wisc" =         c(69, 79, 89, 109, 119, 129),
@@ -83,11 +84,17 @@ score_descriptor <- function(score, metric = "index", system = "aan") {
     stop("Invalid descriptor system. Choose from the available systems: ", paste(names(thresholds), collapse = ", "), ".")
   }
 
-  if (any(is.na(score))) {
-    warning("NA values detected in score. These will be returned as NA in the output.")
+  if (keep_na) {
+    # If keep_na is TRUE, we won't issue a warning about NA values
+    result <- cut(score, breaks = c(-Inf, thresholds[[system]], Inf), labels = descriptor_labels[[system]], include.lowest = TRUE, right = TRUE)
+  } else {
+    # Otherwise, we keep the warning
+    if (any(is.na(score))) {
+      warning("NA values detected in score. These will be returned as NA in the output.")
+    }
+    result <- cut(score, breaks = c(-Inf, thresholds[[system]], Inf), labels = descriptor_labels[[system]], include.lowest = TRUE, right = TRUE)
   }
 
-  result <- cut(score, breaks = c(-Inf, thresholds[[system]], Inf), labels = descriptor_labels[[system]], include.lowest = TRUE, right = TRUE)
-
+  # Return the result
   return(as.character(result))
 }

@@ -167,7 +167,7 @@ print.mean_devs <- function(x, ...) {
 #               0.64, 0.62, 1.00, 0.51,
 #               0.45, 0.52, 0.51, 1.00), nrow = 4, byrow = TRUE)
 # scores <- c(118, 107, 77, 68)
-# scores <- c(80, 100, 100, 100)
+# #scores <- c(80, 100, 100, 100)
 # names <- c("Verbal Comprehension", "Perceptual Reasoning",
 #            "Working Memory", "Processing Speed")
 #
@@ -179,4 +179,4 @@ print.mean_devs <- function(x, ...) {
 #
 # # Print the results using the custom print method
 # print(results)
-#print.default(results)
+# print.default(results)

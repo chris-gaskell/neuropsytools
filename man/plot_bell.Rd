@@ -9,19 +9,34 @@ plot_bell(
   metric = "z",
   score.label.text = "test",
   axis.label.metric = metric,
-  descriptors = TRUE
+  descriptors = TRUE,
+  color = "black",
+  text.color = "black",
+  area.over.fill = "#2fa4e7",
+  area.under.fill = "#ced4da",
+  alpha = 0.3
 )
 }
 \arguments{
-\item{input}{A numeric value (or vector of numbers) representing the score of interest.}
+\item{input}{A numeric value (or vector of numbers) representing the score(s) of interest. The function will adjust the score to the Z-score metric for plotting.}
 
-\item{metric}{A character string specifying the metric of the input score: "percentile", "t", "index", "scaled", or "z" (default).}
+\item{metric}{A character string specifying the metric of the input score: "percentile", "t", "index", "scaled", or "z" (default is "z").}
 
-\item{score.label.text}{A character string (or vector of character strings) for the label text of the input score(s).}
+\item{score.label.text}{A character string (or vector of character strings) for the label text of the input score(s). Defaults to "test".}
 
-\item{axis.label.metric}{A character string specifying the preferred metric label for x-axis labels: "percentile", "t", "index", "scaled", or "z" (default).}
+\item{axis.label.metric}{A character string specifying the preferred metric label for x-axis labels: "percentile", "t", "index", "scaled", or "z" (default is "z").}
 
-\item{descriptors}{A logical indicating whether to include AAN descriptor labels (default is TRUE).}
+\item{descriptors}{A logical indicating whether to include descriptor labels ("Below", "Low", "Average", "High", "Above") on the plot (default is TRUE).}
+
+\item{color}{A character string specifying the colour for the plot line (default is "black").}
+
+\item{text.color}{A character string specifying the colour for the score labels (default is "black").}
+
+\item{area.over.fill}{A character string specifying the colour for the area above the score (default is "#2fa4e7").}
+
+\item{area.under.fill}{A character string specifying the colour for the area below the score (default is "#ced4da").}
+
+\item{alpha}{A numeric value between 0 and 1 indicating the transparency of the shaded areas (default is 0.3).}
 }
 \value{
 A ggplot2 object.
