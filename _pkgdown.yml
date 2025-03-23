@@ -63,6 +63,7 @@ reference:
     desc: >
       Create visualisations like bell curves and forest plots to illustrate results.
     contents:
+      - plot_bar
       - plot_bell
       - plot_forest
       - plot_change
